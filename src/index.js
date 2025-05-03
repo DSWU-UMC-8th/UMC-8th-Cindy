@@ -3,6 +3,7 @@ import express from 'express'          // -> ES Module
 import dotenv from "dotenv"
 import cors from "cors";
 import { handleUserSignUp } from "./controllers/user.controller.js";
+import { handleStoreRegister } from './controllers/store.controller.js';
 const app = express()
 
 dotenv.config(); // .env파일을 읽어와서 process.env에 저장
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 })
 
 app.post("/api/user", handleUserSignUp); // 해당 url로 post요청이 들어오면 handleUserSignUp함수 실행
+app.post("/api/store", handleStoreRegister); // 해당 url로 post요청이 들어오면 handleUserSignUp함수 실행
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

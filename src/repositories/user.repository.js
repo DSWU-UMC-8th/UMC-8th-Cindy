@@ -2,7 +2,7 @@ import { pool } from "../db.config.js";
 
 export const addMember = async (data) => {
   const conn = await pool.getConnection();
-
+  // try: 에러가 발생할 수 있는 주요 코드 실행 
   try {
     const [confirm] = await conn.query(
       `SELECT EXISTS(SELECT 1 FROM member WHERE email = ?) as isExistEmail;`,
@@ -28,10 +28,12 @@ export const addMember = async (data) => {
     );
 
     return result.insertId;
+    // catch: 에러가 발생하면 에러를 처리 
   } catch (err) {
     throw new Error(`오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`);
+  // finally: 에러 발생 여부와 관계 없이 항상 실행되는 코드
   } finally {
-    conn.release();
+    conn.release(); // DB커넥션 반환 
   }
 };
 

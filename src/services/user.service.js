@@ -25,8 +25,10 @@ export const userSignUp = async (data) => {
     await setPreference(joinMemberId, preference);
   }
 
+  // member, preferences 정보 가져오기 
   const member = await getMember(joinMemberId);
   const preferences = await getMemberPreferencesByMemberId(joinMemberId);
 
-  return responseFromUser({ member, preferences });
+  // 가져온 정보를 responseFromUser dto함수로 가공하여 반환 
+  return responseFromUser({ member, preferences }); 
 };
