@@ -9,9 +9,28 @@ export const bodyToStore = (body) => {
 
 export const responseFromStore = (store) => {
     return {
-        regionId: store.region_id,
+        regionId: store.regionId,
         name: store.name,
         address: store.address,
         score: store.score
+    }
+}
+
+export const bodyToReview = (body) => {
+    return {
+        storeId: body.storeId,
+        body: body.body,
+        score: body.score,
+        imageUrl: body.imageUrl
+    };
+};
+
+
+export const responseFromReview= (review, imageUrl) => {
+    return {
+        storeId: review.storeId,
+        body: review.body,
+        score: review.score,
+        imageUrl: imageUrl
     }
 }
