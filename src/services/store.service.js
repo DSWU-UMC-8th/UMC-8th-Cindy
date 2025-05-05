@@ -7,7 +7,7 @@ import {
     addReview,
     setImageUrl, 
     getReview,
-    getImageUrlFromReviewId
+    getImageUrlFromReviewId,
 } from "../repositories/store.repository.js";
 
 export const storeRegister = async (data) => {
@@ -39,6 +39,7 @@ export const reviewWrite = async (data) => {
 
     // 리뷰 등록 
     const reviewId = await addReview({
+        memberId: data.memberId,
         storeId: data.storeId,
         body: data.body,
         score: data.score,
@@ -53,3 +54,4 @@ export const reviewWrite = async (data) => {
     return responseFromReview(review, imageUrl);  
 
 }
+
