@@ -2,8 +2,8 @@
 import express from 'express'          // -> ES Module
 import dotenv from "dotenv"
 import cors from "cors";
-import { handleUserSignUp } from "./controllers/user.controller.js";
-import { handleStoreRegister, handleReviewWrite} from './controllers/store.controller.js';
+import { handleMemberSignUp, handleListMemberReivews } from "./controllers/member.controller.js";
+import { handleStoreRegister, handleReviewWrite, handleListStoreReviews} from './controllers/store.controller.js';
 import { handleMissionChallenge } from './controllers/mission.controller.js';
 const app = express()
 
@@ -21,10 +21,12 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.post("/api/user", handleUserSignUp); // 해당 url로 post요청이 들어오면 handleUserSignUp함수 실행
+app.post("/api/member", handleMemberSignUp); 
 app.post("/api/store", handleStoreRegister); 
 app.post("/api/review", handleReviewWrite);
 app.post("/api/mission/challenge", handleMissionChallenge); 
+app.get("/api/store/:storeId/reviews", handleListStoreReviews); // 가게 리뷰 조회
+app.get("/api/member/reviews", handleListMemberReivews) // 사용자 리뷰 조회 
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

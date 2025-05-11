@@ -1,144 +1,111 @@
-import { pool } from "../db.config.js";
+import {prisma} from "../db.config.js";
 
+
+// 지역 존재 여부 확인 
 export const checkRegionExists = async (regionId) => {
-    const conn = await pool.getConnection();
+    const region = await prisma.region.findUnique({
+        where: { id: regionId}
+    });
+    return region ?? null; // 해당 지역이 존재하면 region 객체 반환, 존재하지 않으면 null 반환
+}
 
-    try{
-        const [rows] = await conn.query(`SELECT id FROM region WHERE id = ?;`, [regionId]);
-        if(rows.length === 0) 
-            return null;
-        return rows[0];
-    } catch (err) {
-        throw new Error(`지역 정보를 가져오는 중 오류 발생: (${err})`); 
-    } finally {
-        conn.release();
-    }
-};
 
+// 가게 등록
 export const addStore = async (data) => {
-    const conn = await pool.getConnection();
-    try{
-        const [result] = await conn.query(
-            `INSERT INTO store (region_id, name, address, score, created_at, updated_at)
-            VALUES (?, ?, ?, ?, NOW(), NOW());`,
-            [
-                data.regionId,
-                data.name,
-                data.address,
-                data.score
-            ]
-        );
-        return result.insertId; // 가게 등록 후 생성된 ID 반환
-    } catch (err) {
-        throw new Error(`가게 등록 중 오류 발생: (${err})`);
-    } finally{
-        conn.release();
-    }
-};
+    const result = await prisma.store.create({
+        data: {
+            regionId: data.regionId,
+            name: data.name,
+            address: data.address, 
+            score:data.score,
+        }
+    });
+    return result.id; // 가게 등록 후 생성된 ID 반환
+}
 
 
-export const getStore = async (storeId) => {
-    const conn = await pool.getConnection();
-
-    try{
-        const [rows] = await conn.query(`SELECT * FROM store WHERE id = ?;`, [storeId]);
-        if(rows.length === 0)
-            return null;
-        return rows[0];
-    } catch{
-        throw new Error(`가게 정보를 가져오는 중 오류 발생: (${err})`); 
-    } finally{
-        conn.release();
-    }
-};
+// 가게 존재 여부 확인
+export const checkStoreExists = async(storeId) => {
+    const store = await prisma.store.findUnique({
+        where: {id:storeId},
+        select: {storeId: true},
+    });
+    return store ?? null // 해당 가게가 존재하면 store 객체 반환, 존재하지 않으면 null 반환
+}
 
 
 
-export const checkStoreExists = async (storeId) => {
-    const conn = await pool.getConnection();
+// 가게 조회
+export const getStore = async(storeId) => {
+    const store = await prisma.store.findUnique({
+        where: {id:storeId},
+    });
+    return store ?? null;
+}
 
-    try{
-        const [rows] = await conn.query(`SELECT id FROM store WHERE id = ?;`, [storeId]);
-        if(rows.length === 0) 
-            return null;
-        return rows[0];
-    } catch (err) {
-        throw new Error(`가게 정보를 가져오는 중 오류 발생: (${err})`); 
-    } finally {
-        conn.release();
-    }
-};
 
+// 리뷰 등록
 export const addReview = async (data) => {
-    const conn = await pool.getConnection();
-    try{
-        const [result] = await conn.query(
-            `INSERT INTO review (member_id, store_id, body, score, created_at)
-            VALUES (?, ?, ?, ?, NOW());`,
-            [
-                data.memberId,
-                data.storeId,
-                data.body,
-                data.score,
-            ]
-        );
-        return result.insertId; // 리뷰 등록 후 생성된 ID 반환
-    } catch (err) {
-        throw new Error(`리뷰 등록 중 오류 발생: (${err})`);
-    } finally{
-        conn.release();
-    }
+    const result = await prisma.review.create({
+        data: {
+            memberId: data.memberId,
+            storeId: data.storeId,
+            body: data.body,
+            score: data.score,
+        }
+    });
+    return result.id;
 }
 
-export const setImageUrl = async (reviewId, data) => { 
-    const conn = await pool.getConnection();
-    try{
-        const [result] = await conn.query(
-            `INSERT INTO review_image (review_id, store_id, image_url, created_at, updated_at) 
-                VALUES (?, ?, ?, NOW(), NOW());`,
-            [   
-                reviewId, 
-                data.storeId,
-                data.imageUrl,
-                data.imageUrl,
-            ]
-        );
-        return result.insertId; // 리뷰 등록 후 생성된 ID 반환
-    } catch (err) {
-        throw new Error(`리뷰 등록 중 오류 발생: (${err})`);
-    } finally{
-        conn.release();
-    }
+// 이미지 URL 생성
+export const setImageUrl = async(reviewId, data) => {
+    const result = await prisma.reviewImage.create({
+        data:{
+            reviewId: reviewId,
+            storeId: data.storeId,
+            imageUrl: data.imageUrl,
+        }
+    });
+    return result.id;
 }
 
+
+
+// 리뷰 조회 후 리뷰ID 반환
 export const getReview = async (reviewId) => {
-    const conn = await pool.getConnection();
-
-    try{
-        const [rows] = await conn.query(`SELECT * FROM review WHERE id = ?;`, [reviewId]);
-        if(rows.length === 0)
-            return null;
-        return rows[0];
-    } catch{
-        throw new Error(`리뷰 정보를 가져오는 중 오류 발생: (${err})`); 
-    } finally{
-        conn.release();
-    }
+    const review = await prisma.review.findUnique({ 
+        where: {id: reviewId},
+        select: {id: true},
+    });
+    return review ?? null;
 }
 
-
-
+// 리뷰 ID로 이미지 URL 가져오기
 export const getImageUrlFromReviewId = async (reviewId) => {
-    const conn = await pool.getConnection();
+    const imageUrl = await prisma.reviewImage.findUnique({
+        where: {id: reviewId},
+        select: {imageUrl: true},
+    });
 
-    try{
-        const [rows] = await conn.query(`SELECT image_url FROM review_image WHERE review_id = ?;`, [reviewId]);
-        if(rows.length === 0)
-            return null;
-        return rows[0].image_url;
-    } catch{
-        throw new Error(`리뷰 정보를 가져오는 중 오류 발생: (${err})`); 
-    } finally{
-        conn.release();
-    }
+    return imageUrl ?? null; 
 }
+
+
+export const getAllStoreReviews = async (storeId, cursor) => {
+  const reviews = await prisma.userStoreReview.findMany({
+    select: {
+      id: true,
+      body: true,
+      score: true,
+      member: true, // 연관된 member 객체
+      store: true, // 연관된 store 객체
+    },
+    where: { storeId: storeId, id: { gt: cursor } }, // gt: greater than, 즉 id가 cursor보다 큰 리뷰들만 가져옴
+                                                    // SQL 표현-> toreId == ?? AND id > cursor
+    orderBy: { id: "asc" }, // 오름차순
+    take: 5, // 최대 5개 리뷰 가져오기
+  });
+
+  return reviews; // 위 조건에 맞는 리뷰 배열 반환 
+};
+

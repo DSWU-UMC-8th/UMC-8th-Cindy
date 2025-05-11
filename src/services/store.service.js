@@ -55,3 +55,8 @@ export const reviewWrite = async (data) => {
 
 }
 
+// 가게 리뷰 목록 가져오기
+export const listStoreReviews = async (storeId, cursor) => {
+    const reviews = await getAllStoreReviews(storeId, cursor);
+    return responseFromReviews(reviews); 
+};

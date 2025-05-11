@@ -18,3 +18,12 @@ export const handleReviewWrite = async (req, res, next) => {
   const review = await reviewWrite(bodyToReview(req.body)); 
   res.status(StatusCodes.OK).json({result: review});
 }
+
+// 가게의 리뷰 목록 가져오기 핸들러 
+export const handleListStoreReviews = async (req, res, next) => {
+  const reviews = await listStoreReviews(
+    parseInt(req.params.storeId),
+    typeof req.query.cursor === "string" ? parseInt(req.query.cursor) : 0
+  );
+  res.status(StatusCodes.OK).json(reviews);
+};

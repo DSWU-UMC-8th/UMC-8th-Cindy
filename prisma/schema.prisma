@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model Member {
+  id            Int       @id @default(autoincrement())
+  name          String?   @db.VarChar(20)
+  gender        String?   @db.VarChar(9)
+  age           Int?
+  address       String?   @db.VarChar(40)
+  specAddress   String?   @map("spec_address") @db.VarChar(40)
+  phoneNumber   String?   @map("phone_number") @db.VarChar(13)
+  status        String?   @db.VarChar(15)
+  inactiveDate  DateTime? @map("inactive_date") @db.DateTime(6)
+  socialType    String?   @map("social_type") @db.VarChar(10)
+  createdAt     DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt     DateTime? @map("updated_at") @db.DateTime(6)
+  email         String?   @db.VarChar(50)
+  point         Int?
+
+  // 관계 필드 (1 : N)
+  // 1:N관계이므로 배열 사용
+  preferences      MemberPrefer[]   // member_prefer 테이블
+  agreements       MemberAgree[]    // member_agree 테이블
+  missions         MemberMission[]  // member_mission 테이블
+  reviews          Review[]         // review 테이블
+
+  @@map("member")
+}
+
+
+model FoodCategory {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(15)
+
+  members  MemberPrefer[]  // 1:N 관계
+
+  @@map("food_category")
+}
+
+ model MemberPrefer {
+  id         Int       @id @default(autoincrement())
+  memberId   Int       @map("member_id")
+  categoryId Int       @map("category_id")
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  member     Member     @relation(fields: [memberId], references: [id])
+  category   FoodCategory @relation(fields: [categoryId], references: [id])
+
+  @@map("member_prefer")
+}
+
+
+model MemberAgree {
+  id         Int       @id @default(autoincrement())
+  memberId   Int?      @map("member_id")
+  termsId    Int?      @map("terms_id")
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  member     Member?   @relation(fields: [memberId], references: [id])
+  terms      Terms?    @relation(fields: [termsId], references: [id])
+
+  @@map("member_agree")
+}
+
+model MemberMission {
+  id         Int       @id @default(autoincrement())
+  memberId   Int?      @map("member_id")
+  missionId  Int?      @map("mission_id")
+  status     String?   @db.VarChar(15)
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  member     Member?   @relation(fields: [memberId], references: [id])
+  mission    Mission?  @relation(fields: [missionId], references: [id])
+
+  @@map("member_mission")
+}
+
+model Mission {
+  id           Int       @id @default(autoincrement())
+  storeId      Int?      @map("store_id")
+  reward       Int?
+  deadline     DateTime?
+  missionSpec  String?   @map("mission_spec")
+  createdAt    DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt    DateTime? @map("updated_at") @db.DateTime(6)
+
+  store        Store?    @relation(fields: [storeId], references: [id])
+  memberMissions MemberMission[]
+
+  @@map("mission")
+}
+
+model Region {
+  id         Int       @id @default(autoincrement())
+  name       String?   @db.VarChar(20)
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  stores     Store[]
+
+  @@map("region")
+}
+
+model Review {
+  id         Int       @id @default(autoincrement())
+  memberId   Int?      @map("member_id")
+  storeId    Int?      @map("store_id")
+  body       String?
+  score      Float?
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  member     Member?   @relation(fields: [memberId], references: [id])
+  store      Store?    @relation(fields: [storeId], references: [id])
+  images     ReviewImage[]
+
+  @@map("review")
+}
+
+model ReviewImage {
+  id         Int       @id @default(autoincrement())
+  reviewId   Int?      @map("review_id")
+  storeId    Int?      @map("store_id")
+  imageUrl   String?   @map("image_url")
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  review     Review?   @relation(fields: [reviewId], references: [id])
+  store      Store?    @relation(fields: [storeId], references: [id])
+
+  @@map("review_image")
+}
+
+model Store {
+  id         Int       @id @default(autoincrement())
+  regionId   Int?      @map("region_id")
+  name       String?   @db.VarChar(50)
+  address    String?   @db.VarChar(50)
+  score      Float?
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  region     Region?   @relation(fields: [regionId], references: [id])
+  missions   Mission[]
+  reviews    Review[]
+  reviewImages ReviewImage[]
+
+  @@map("store")
+}
+
+model Terms {
+  id         Int       @id @default(autoincrement())
+  title      String?   @db.VarChar(20)
+  body       String?
+  optional   Boolean?
+  createdAt  DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @map("updated_at") @db.DateTime(6)
+
+  agrees     MemberAgree[]
+
+  @@map("terms")
+}

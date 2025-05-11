@@ -27,11 +27,12 @@ export const bodyToReview = (body) => {
 };
 
 
-export const responseFromReview= (review, imageUrl) => {
+export const responseFromReview= (reviews) => {
     return {
-        storeId: review.storeId,
-        body: review.body,
-        score: review.score,
-        imageUrl: imageUrl
-    }
-}
+        data: reviews,
+        pagination: {
+            // 리뷰가 하나라도 있다면 reviews[reviews.length - 1].id를 cursor로 사용 
+            cursor: reviews.length ? reviews[reviews.length - 1].id : null,
+        },
+    };
+};
