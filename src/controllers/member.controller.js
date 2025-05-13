@@ -29,3 +29,4 @@ export const handleListMemberReivews = async (req, res, next) => {
   
   res.status(StatusCodes.OK).json({ result: reviews });
 }
+

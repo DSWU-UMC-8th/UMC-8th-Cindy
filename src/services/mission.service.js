@@ -1,5 +1,16 @@
-import { addMemberMission, checkMemberMissionStatus, getMemberMissionByMemberMissionId } from "../repositories/mission.repository.js";
-import { responseFromMemberMission } from "../dtos/mission.dto.js";
+import { 
+    addMemberMission, 
+    checkMemberMissionStatus, 
+    getMemberMissionByMemberMissionId,
+    getAllMemberMissions,
+     } from "../repositories/mission.repository.js";
+
+import { 
+    responseFromMemberMission, 
+    responseFromStoreMissions,
+    responseFromMemberMissions
+    } from "../dtos/mission.dto.js";
+import { response } from "express";
 
 export const missionChallenge = async (data) => { // data: missionId, memberId 
     // 미션 도전 중 상태인지 확인
@@ -26,4 +37,14 @@ export const missionChallenge = async (data) => { // data: missionId, memberId
     else{
         throw new Error("미션 도전 중 오류 발생");
     }
+}
+
+export const listStoreMissions = async (storeId, cursor) => {
+    const missions = await getAllStoreMissions(storeId, cursor);
+    return responseFromStoreMissions(missions);
+}
+
+export const listMemberMissions = async (memberId, status, cursor) => {
+    const missions = await getAllMemberMissions(memberId, status, cursor);
+    return responseFromMemberMissions(missions);
 }

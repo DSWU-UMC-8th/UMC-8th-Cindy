@@ -1,5 +1,9 @@
 import { bodyToMission } from "../dtos/mission.dto.js";
-import { missionChallenge } from "../services/mission.service.js";
+import { 
+  missionChallenge, 
+  listStoreMissions,
+  listMemberMissions 
+} from "../services/mission.service.js";
 
 
 export const handleMissionChallenge = async (req, res, next) => {
@@ -32,3 +36,27 @@ export const handleMissionChallenge = async (req, res, next) => {
   }
 };
 
+// 가게의 미션 목록 가져오기 핸들러
+export const handleListStoreMissions = async (req, res, next) => {
+  const missions = await listStoreMissions(
+    parseInt(req.params.storeId),
+    typeof req.query.cursor === "string" ? parseInt(req.query.cursor) : 0
+  );
+  return res.status(200).json(missions);
+};
+
+// 사용자가 진행중인 미션 목록 가져오기 핸들러
+export const handleListMemberMissions = async (req, res, next) => {
+  
+  const memberId = parseInt(req.headers["x-member-id"]);
+  if (!memberId) {
+    return res.status(400).json({ error: "잘못된 요청입니다." });
+  }
+
+  const missions = await listMemberMissions(
+    memberId, 
+    req.query.status,
+    typeof req.query.cursor === "string" ? parseInt(req.query.cursor) : 0
+  );
+  return res.status(200).json(missions);
+}

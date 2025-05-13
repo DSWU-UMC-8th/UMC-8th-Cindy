@@ -37,3 +37,58 @@ export const getMemberMissionByMemberMissionId = async (id) => {
     });
     return result ?? null;
 }
+
+export const getAllStoreMissions = async (storeId, cursor) => {
+    const missions = await prisma.mission.findMany({
+        where: {
+            storeId: storeId,
+        },
+        select: {
+            id: true,
+            deadline: true,
+            missionSpec: true,
+            store: {
+                select: {
+                    id: true,
+                    name: true,
+                    address: true,
+                },
+            },
+        },
+        take: 10,
+        skip: cursor ? 1 : 0, // cursor가 존재하면 1개 건너뛰기
+        cursor: cursor ? { id: cursor } : undefined, // cursor가 존재하면 해당 id부터 시작
+    });
+    return missions;
+}
+
+export const getAllMemberMissions = async (memberId, status, cursor) => {
+    const missions = await prisma.memberMission.findMany({
+        where: {
+            memberId: memberId,
+            status: status === "complete" ? "진행완료" : "진행중",
+        },
+        select: {
+            id: true,
+            mission: {
+                select: {
+                    id: true,
+                    deadline: true,
+                    missionSpec: true,
+                    store: {
+                        select: {
+                            id: true,
+                            name: true,
+                            address: true,
+                        },
+                    },
+                },
+            },
+        },
+        take: 10,
+        skip: cursor ? 1 : 0, // cursor가 존재하면 1개 건너뛰기
+        cursor: cursor ? { id: cursor } : undefined, // cursor가 존재하면 해당 id부터 시작
+    });
+    return missions;
+}
+
