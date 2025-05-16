@@ -1,6 +1,6 @@
 export const bodyToStore = (body) => {
     return {
-        regionId: body.regionId,
+        regionId: body.regionId.toString(),
         name: body.name,
         address: body.address,
         score: body.score
@@ -9,7 +9,7 @@ export const bodyToStore = (body) => {
 
 export const responseFromStore = (store) => {
     return {
-        regionId: store.regionId,
+        regionId: store.regionId.toString(),
         name: store.name,
         address: store.address,
         score: store.score
@@ -18,7 +18,7 @@ export const responseFromStore = (store) => {
 
 export const bodyToReview = (body) => {
     return {
-        memberId: body.memberId,
+        memberId: body.memberId.toString(),
         storeId: body.storeId,
         body: body.body,
         score: body.score,

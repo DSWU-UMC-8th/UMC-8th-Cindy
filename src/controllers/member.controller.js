@@ -2,12 +2,19 @@ import { StatusCodes } from "http-status-codes";
 import { bodyToMember } from "../dtos/member.dto.js";
 import { memberSignUp, listMemberReviews } from "../services/member.service.js";
 
+// 회원가입 
 export const handleMemberSignUp = async (req, res, next) => {
   console.log("회원가입을 요청했습니다!");
   console.log("[MemberController] request body:", req.body); // 값이 잘 들어오나 확인하기 위한 테스트용
 
   const member = await memberSignUp(bodyToMember(req.body)); 
-  res.status(StatusCodes.OK).json({ result: member });
+  // res.status(StatusCodes.OK).json({ 
+  //   resultType: "SUCCESS",
+  //   error: null,
+  //   success: member,
+  // });
+
+  res.status(StatusCodes.OK).success(member);
 };
 
 export const handleStoreRegister = async (req, res, next) => {

@@ -13,22 +13,22 @@ export const bodyToMember = (body) => {
 
 export const responseFromMember = ({ member, preferences }) => {
   return {
-    id: member.id,
-    email: member.email,
+    id: member.id.toString(),
     name: member.name,
     gender: member.gender,
     age: member.age,
     address: member.address,
     specAddress: member.spec_address,
     phoneNumber: member.phone_number,
-    preferences: preferences.map(p => p.category_id)
+    email: member.email,
+    preferences: preferences.map(p => p.categoryId.toString())
   };
 };
 
 export const responseFromMemberReviews = (reviews) => {
   return reviews.map((review) => {
     return {
-      id: review.id,
+      id: review.id.toString(),
       body: review.body,
       score: review.score,
       createdAt: review.createdAt,

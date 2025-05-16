@@ -1,13 +1,13 @@
 export const bodyToMission = (body) => {
     return {
-        memberId: body.memberId,
-        missionId: body.missionId
+        memberId: body.memberId.toString(),
+        missionId: body.missionId.toString()
     };
 }
 
 export const responseFromMemberMission = (mission) => {
     return {
-        missionId: mission.mission_id,
+        missionId: mission.mission_id.toString(),
         status: mission.status,
         created_at: mission.created_at,
         updated_at: mission.updated_at
@@ -15,7 +15,7 @@ export const responseFromMemberMission = (mission) => {
 }
 
 export const responseFromStoreMissions = (missions) => {
-    return missions.map((mission) => ({
+    return missions.map((mission) => ({ // mission = missions[0], missions[1] .. 
         missionId: mission.id.toString(), // bigint -> string
         deadline: mission.deadline,
         missionSpec: mission.missionSpec,

@@ -3,7 +3,7 @@ import {prisma} from "../db.config.js";
 // 사용자 추가
 export const addMember = async (data) => {
   const member = await prisma.member.findFirst({ where: { email: data.email } });
-  if (member) {
+  if (member) { // 이미 존재하는 이메일 
     return null;
   }
 
@@ -22,10 +22,10 @@ export const setPreference = async (memberId, categoryId) => {
   try {
     await prisma.memberPrefer.create({
       data: {
-        member_id: memberId,
-        category_id: categoryId,
-        created_at: new Date(),
-        updated_at: new Date()
+        memberId: memberId,
+        categoryId: categoryId,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     });
   } catch (err) {
