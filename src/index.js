@@ -88,9 +88,9 @@ app.get("/openapi.json", async (req, res, next) => {
 
 
 app.post("/api/member", handleMemberSignUp); // 회원가입
-app.post("/api/store", handleStoreRegister); 
-app.post("/api/review", handleReviewWrite);
-app.post("/api/mission/challenge", handleMissionChallenge); 
+app.post("/api/store", handleStoreRegister); // 가게 등록
+app.post("/api/review", handleReviewWrite); // 리뷰 등록 
+app.post("/api/mission/challenge", handleMissionChallenge); // 미션 도전 
 app.get("/api/store/:storeId/reviews", handleListStoreReviews); // 가게 리뷰 조회
 app.get("/api/member/reviews", handleListMemberReivews); // 사용자 리뷰 조회 
 app.get("/api/store/:storeId/missions", handleListStoreMissions); // 특정 가게의 미션 목록 조회 (query string: cursor)

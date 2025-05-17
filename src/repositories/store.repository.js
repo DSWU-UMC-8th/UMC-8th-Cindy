@@ -27,8 +27,8 @@ export const addStore = async (data) => {
 // 가게 존재 여부 확인
 export const checkStoreExists = async(storeId) => {
     const store = await prisma.store.findUnique({
-        where: {id:storeId},
-        select: {storeId: true},
+        where: {id: storeId},
+        select: {id: true},
     });
     return store ?? null // 해당 가게가 존재하면 store 객체 반환, 존재하지 않으면 null 반환
 }
@@ -70,34 +70,36 @@ export const setImageUrl = async(reviewId, data) => {
 }
 
 
-
-// 리뷰 조회 후 리뷰ID 반환
-export const getReview = async (reviewId) => {
+// 리뷰 조회 
+export const getReviewByReviewId = async (reviewId) => {
     const review = await prisma.review.findUnique({ 
         where: {id: reviewId},
-        select: {id: true},
+        select: {
+            id: true,
+            storeId: true,
+            body: true,
+        },
     });
     return review ?? null;
 }
 
-// 리뷰 ID로 이미지 URL 가져오기
-export const getImageUrlFromReviewId = async (reviewId) => {
+// imageUrlId로 이미지 URL 가져오기
+export const getImageUrlByImageUrlId = async (imageUrlId) => {
     const imageUrl = await prisma.reviewImage.findUnique({
-        where: {id: reviewId},
+        where: {id: imageUrlId},
         select: {imageUrl: true},
     });
 
-    return imageUrl ?? null; 
+    return imageUrl; 
 }
 
 
 export const getAllStoreReviews = async (storeId, cursor) => {
-  const reviews = await prisma.userStoreReview.findMany({
+  const reviews = await prisma.review.findMany({
     select: {
       id: true,
       body: true,
       score: true,
-      member: true, // 연관된 member 객체
       store: true, // 연관된 store 객체
     },
     where: { storeId: storeId, id: { gt: cursor } }, // gt: greater than, 즉 id가 cursor보다 큰 리뷰들만 가져옴

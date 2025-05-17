@@ -1,4 +1,4 @@
-import { responseFromStore, responseFromReview } from "../dtos/store.dto.js";
+import { responseFromStore, responseFromReview, responseFromReviews } from "../dtos/store.dto.js";
 import {
     addStore,
     getStore,
@@ -6,8 +6,9 @@ import {
     checkStoreExists,
     addReview,
     setImageUrl, 
-    getReview,
-    getImageUrlFromReviewId,
+    getReviewByReviewId,
+    getImageUrlByImageUrlId,
+    getAllStoreReviews
 } from "../repositories/store.repository.js";
 
 export const storeRegister = async (data) => {
@@ -30,6 +31,7 @@ export const storeRegister = async (data) => {
     return responseFromStore(store);
 }
 
+// 리뷰 등록 
 export const reviewWrite = async (data) => {
     // 가게 존재 여부 확인
     const storeId = await checkStoreExists(data.storeId);
@@ -46,11 +48,11 @@ export const reviewWrite = async (data) => {
     });
 
 
-    await setImageUrl(reviewId, data);
+    const imageUrlId = await setImageUrl(reviewId, data);
 
     // 리뷰 정보 가져오기
-    const review = await getReview(reviewId);
-    const imageUrl = await getImageUrlFromReviewId(reviewId); 
+    const review = await getReviewByReviewId(reviewId);
+    const imageUrl = await getImageUrlByImageUrlId(imageUrlId); 
     return responseFromReview(review, imageUrl);  
 
 }

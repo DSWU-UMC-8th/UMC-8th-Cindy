@@ -11,7 +11,7 @@ export const handleMissionChallenge = async (req, res, next) => {
   console.log("[missionController]request body:", req.body);
   try{
     const memberMission = await missionChallenge(bodyToMission(req.body));
-    return res.status(200).json(memberMission); 
+    return res.status(200).success(memberMission); 
   } catch (err) {
     console.log(err.message);
     if(err.message === "이미 도전 중인 미션입니다.") {

@@ -1,7 +1,7 @@
 export const bodyToMission = (body) => {
     return {
-        memberId: body.memberId.toString(),
-        missionId: body.missionId.toString()
+        memberId: BigInt(body.memberId),
+        missionId: BigInt(body.missionId),
     };
 }
 
@@ -9,8 +9,6 @@ export const responseFromMemberMission = (mission) => {
     return {
         missionId: mission.mission_id.toString(),
         status: mission.status,
-        created_at: mission.created_at,
-        updated_at: mission.updated_at
     };
 }
 
