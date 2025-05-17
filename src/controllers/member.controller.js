@@ -85,6 +85,46 @@ export const handleMemberSignUp = async (req, res, next) => {
 };
 
 export const handleStoreRegister = async (req, res, next) => {
+  /*
+  #swagger.summary = '상점 등록 API'
+  #swagger.requestBody = {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            name: { type: "string", example: "정릉분식" },
+            address: { type: "string", example: "서울시 성북구 정릉로 77" },
+            regionId: { type: "number", example: 1 }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[200] = {
+    description: "상점 등록 성공",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            result: {
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                name: { type: "string" },
+                address: { type: "string" },
+                regionId: { type: "number" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+*/
+
   console.log("가게 등록 요청 성공");
   console.log("[memberContorller] request body:", req.body);
 
@@ -93,6 +133,59 @@ export const handleStoreRegister = async (req, res, next) => {
 }
 
 export const handleListMemberReivews = async (req, res, next) => {
+  /*
+  #swagger.summary = '사용자 리뷰 목록 조회 API'
+  #swagger.parameters['x-member-id'] = {
+    in: 'header',
+    required: true,
+    type: 'string',
+    description: '사용자 ID를 담고 있는 커스텀 헤더'
+  }
+  #swagger.responses[200] = {
+    description: "사용자 리뷰 목록 조회 성공",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            result: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "string", example: "123" },
+                  store: {
+                    type: "object",
+                    properties: {
+                      id: { type: "string", example: "11" },
+                      name: { type: "string", example: "정릉분식" }
+                    }
+                  },
+                  content: { type: "string", example: "매우 청결하고 맛있어요." },
+                  score: { type: "number", example: 4.5 }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[400] = {
+    description: "x-member-id 헤더가 누락되었거나 잘못된 경우",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            error: { type: "string", example: "잘못된 요청입니다." }
+          }
+        }
+      }
+    }
+  }
+*/
+
   
   console.log("사용자 리뷰 조회 요청 성공");
 
