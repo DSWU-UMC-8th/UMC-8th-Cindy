@@ -6,10 +6,23 @@ import cors from "cors";
 import swaggerAutogen from "swagger-autogen" 
 import swaggerUiExpress from "swagger-ui-express"
 
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import session from "express-session";
+import passport from "passport";
+import { googleStrategy } from "./auth.config.js";
+import { prisma } from "./db.config.js";
+
+passport.use(googleStrategy); // 구글 로그인 방식 등록 
+passport.serializeUser((user, done) => done(null, user)); // 세션에 사용자 정보를 저장할 때
+passport.deserializeUser((user, done) => done(null, user)); // 세션의 정보를 가져올 때
+
 
 import { handleMemberSignUp, handleListMemberReivews } from "./controllers/member.controller.js";
 import { handleStoreRegister, handleReviewWrite, handleListStoreReviews} from './controllers/store.controller.js';
 import { handleMissionChallenge, handleListStoreMissions, handleListMemberMissions } from './controllers/mission.controller.js';
+
+
+
 const app = express()
 
 dotenv.config(); // .env파일을 읽어와서 process.env에 저장
@@ -79,12 +92,53 @@ app.get("/openapi.json", async (req, res, next) => {
       title: "UMC 7th",
       description: "UMC 7th Node.js 테스트 프로젝트입니다.",
     },
-    host: "localhost:3000",
+    host: "localhost:3030",
   };
 
   const result = await swaggerAutogen(options)(outputFile, routes, doc);
   res.json(result ? result.data : null);
 });
+
+// 세션 설정
+app.use(
+  session({
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // ms
+    },
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.EXPRESS_SESSION_SECRET,
+    store: new PrismaSessionStore(prisma, {
+      checkPeriod: 2 * 60 * 1000, // ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 테스트 
+app.get("/", (req, res) => {
+  // #swagger.ignore = true
+  console.log(req.member);
+  res.send("Hello World!");
+});
+
+
+
+
+// 구글 로그인 
+app.get("/oauth2/login/google", passport.authenticate("google")); // 해당 경로로 접속하면 자동으로 Google 로그인 주소로 redirect
+app.get( // 구글 로그인 성공 후 자동으로 되돌아오는 주소
+  "/oauth2/callback/google",
+  passport.authenticate("google", {
+    failureRedirect: "/oauth2/login/google",
+    successRedirect: true,
+  }),
+  (req, res) => res.redirect("/"), // 로그인 성공 후 리다이렉트
+);
 
 
 app.post("/api/member", handleMemberSignUp); // 회원가입
@@ -95,6 +149,10 @@ app.get("/api/store/:storeId/reviews", handleListStoreReviews); // 가게 리뷰
 app.get("/api/member/reviews", handleListMemberReivews); // 사용자 리뷰 조회 
 app.get("/api/store/:storeId/missions", handleListStoreMissions); // 특정 가게의 미션 목록 조회 (query string: cursor)
 app.get("/api/member/missions", handleListMemberMissions); // 사용자 미션 목록 조회  (query string: status(진행완료, 진행중))
+
+
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
